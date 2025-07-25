@@ -12,7 +12,7 @@
     <aside class="w-64 bg-blue-900 text-white flex flex-col">
       <div class="h-20 flex items-center justify-center border-b border-blue-700">
         <!-- Logo del club (cuadro blanco de ejemplo) -->
-        <div <img src="C:\Users\dylan\Documents\opi\GyE_de_Santa_Fe.PNG">></div>
+        <div class="w-16 h-16 bg-white rounded"></div>
       </div>
       <nav class="flex-grow p-4 space-y-4">
         <a href="#formulario" class="block px-4 py-2 rounded hover:bg-blue-700">Registrar Socio</a>
@@ -133,35 +133,28 @@
       }
     });
 
-   sync function cargarSocios() {
-  const { data, error } = await supabase
-    .from("socios")
-    .select("*")
-    .order("id", { ascending: false });
-
-  if (error) {
-    console.error("Error al obtener socios:", error);
-    return;
-  }
-
-  const tbody = document.querySelector("#tabla-socios tbody");
-  tbody.innerHTML = ""; // Limpiar tabla
-
-  data.forEach((socio) => {
-    const fila = document.createElement("tr");
-    fila.innerHTML = `
-      <td>${socio.nombre}</td>
-      <td>${socio.celular}</td>
-      <td>${socio.categoria}</td>
-      <td>${socio.deporte}</td>
-      <td>${socio.id_socio}</td>
-      <td>${socio.tipo_cuota}</td>
-      <td>${socio.precio_cuota}</td>
-      <td>${socio.vencimiento}</td>
-    `;
-    tbody.appendChild(fila);
-  });
-}
+    async function cargarSocios() {
+      const res = await fetch(`${supabaseUrl}/rest/v1/${tableName}?select=*`, {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`
+        }
+      });
+      const socios = await res.json();
+      const tabla = document.getElementById('tablaSocios');
+      tabla.innerHTML = socios.map(s => `
+        <tr class="border-b">
+          <td class="p-2">${s.nombre}</td>
+          <td class="p-2">${s.celular}</td>
+          <td class="p-2">${s.categoria}</td>
+          <td class="p-2">${s.deporte}</td>
+          <td class="p-2">${s.id_socio}</td>
+          <td class="p-2">${s.tipo_cuota}</td>
+          <td class="p-2">${s.precio_cuota}</td>
+          <td class="p-2">${s.vencimiento}</td>
+        </tr>
+      `).join('');
+    }
 
     document.getElementById('filtroForm').addEventListener('submit', async (e) => {
       e.preventDefault();
